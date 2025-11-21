@@ -26,6 +26,8 @@
     --src-manual: #ffffff;       /* 手打: 亮白 */
     --src-import: #f9e2af;       /* 匯入: 金黃 */
     --src-ocr: #cba6f7;          /* OCR: 紫色 */
+    /* 新增這一行：格子大小變數 */
+    --cell-size: 50px;
 }
 
 /* =========================================
@@ -95,8 +97,8 @@ body {
 
 .board {
     display: grid;
-    grid-template-columns: repeat(9, 50px);
-    grid-template-rows: repeat(9, 50px);
+    grid-template-columns: repeat(9, var(--cell-size));
+    grid-template-rows: repeat(9, var(--cell-size));
     border: 3px solid var(--border-outer);
     box-shadow: 0 0 15px rgba(98, 148, 230, 0.2);
     background-color: var(--grid-thick); /* 填補縫隙 */
@@ -104,10 +106,10 @@ body {
 }
 
 input {
-    width: 50px;
-    height: 50px;
+    width: var(--cell-size);
+    height: var(--cell-size);
     text-align: center;
-    font-size: 24px;
+    font-size: calc(var(--cell-size) * 0.5);
     border: none;
     outline: none;
     background-color: var(--input-bg);
@@ -314,4 +316,56 @@ textarea {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+/* =========================================
+   9. 手機版響應式設計 (Mobile RWD)
+   ========================================= */
+@media screen and (max-width: 850px) {
+    /* 1. 讓變數變小：格子縮小以適應手機寬度 (360px 左右) */
+    :root {
+        --cell-size: 38px; /* 從 50px 縮小到 38px，剛好塞進手機 */
+    }
+
+    /* 2. 版面改為直向排列 */
+    .container {
+        flex-direction: column; /* 變垂直 */
+        height: auto; /* 高度自動撐開，不再固定 */
+        padding: 10px;
+        width: 100%;
+        overflow-y: auto; /* 允許上下捲動 */
+    }
+
+    body {
+        height: auto; /* 解除 body 高度限制 */
+        overflow-y: auto; /* 允許 body 捲動 */
+        padding-bottom: 20px;
+    }
+
+    /* 3. 調整區塊寬度 */
+    .game-area, .sidebar {
+        width: 100%; /* 佔滿螢幕寬度 */
+        padding: 15px;
+    }
+
+    /* 4. 隱藏提示文字，節省空間 */
+    .tip-text {
+        display: none;
+    }
+
+    /* 5. 標題變小一點 */
+    .game-title {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    /* 6. 按鈕變大，方便手指點擊 */
+    button {
+        padding: 15px;
+        font-size: 1em;
+    }
+
+    /* 7. 修正 Modal 在手機上的大小 */
+    .modal-content {
+        width: 90%;
+    }
 }
