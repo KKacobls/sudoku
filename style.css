@@ -1,22 +1,36 @@
-/* ... (保留原本的 :root 和 body 設定) ... */
+/* =========================================
+   1. 全域變數 (Variables & Theme)
+   ========================================= */
 :root {
-    --bg-color: #12121a;
-    --panel-bg: #1e1e2e;
-    --input-bg: #2a2a3c;
-    --grid-thin: #454560;
-    --grid-thick: #6294e6;
-    --border-outer: #6294e6;
-    --text-main: #cdd6f4;
-    --text-muted: #7f849c;
-    --accent: #89b4fa;
-    --success: #a6e3a1;
-    --error: #f38ba8;
-    --modal-bg: rgba(0, 0, 0, 0.8); /* 遮罩背景 */
+    /* 背景色系 */
+    --bg-color: #12121a;         /* 網頁背景 */
+    --panel-bg: #1e1e2e;         /*區塊背景 */
+    --input-bg: #2a2a3c;         /* 輸入格背景 */
+    --modal-bg: rgba(0, 0, 0, 0.85); /* 遮罩背景 */
+
+    /* 線條與邊框 */
+    --grid-thin: #454560;        /* 一般格子線 (深灰) */
+    --grid-thick: #6294e6;       /* 宮格粗線 (亮藍) */
+    --border-outer: #6294e6;     /* 最外框 */
+    
+    /* 文字色系 */
+    --text-main: #cdd6f4;        /* 主要文字 */
+    --text-muted: #7f849c;       /* 次要/提示文字 */
+
+    /* 狀態色系 */
+    --accent: #89b4fa;           /* 強調 (藍) */
+    --success: #a6e3a1;          /* 成功 (綠) */
+    --error: #f38ba8;            /* 錯誤 (紅) */
+    
+    /* 來源標記色系 (新增) */
+    --src-manual: #ffffff;       /* 手打: 亮白 */
+    --src-import: #f9e2af;       /* 匯入: 金黃 */
+    --src-ocr: #cba6f7;          /* OCR: 紫色 */
 }
 
-/* 保留原本的 body, container, game-area, board, input 設定... */
-/* 請將上方這段複製過來，或者直接在舊檔後面加上新的 CSS */
-
+/* =========================================
+   2. 基礎設定 (Base Styles)
+   ========================================= */
 body {
     font-family: 'Consolas', 'Monaco', monospace;
     background-color: var(--bg-color);
@@ -26,9 +40,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow: hidden; /* 防止捲動 */
 }
 
+/* 捲動條美化 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+
+/* =========================================
+   3. 佈局結構 (Layout)
+   ========================================= */
 .container {
     display: flex;
     width: 95%;
@@ -50,8 +72,20 @@ body {
     border: 1px solid #333;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     padding: 30px;
+    position: relative;
 }
 
+.sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 300px;
+}
+
+/* =========================================
+   4. 數獨盤面核心 (Sudoku Board)
+   ========================================= */
 .game-title {
     margin-top: 0;
     letter-spacing: 3px;
@@ -59,15 +93,13 @@ body {
     text-shadow: 0 0 10px rgba(137, 180, 250, 0.3);
 }
 
-.tip-text { margin-top: 15px; color: var(--text-muted); font-size: 0.9em; }
-
 .board {
     display: grid;
     grid-template-columns: repeat(9, 50px);
     grid-template-rows: repeat(9, 50px);
     border: 3px solid var(--border-outer);
     box-shadow: 0 0 15px rgba(98, 148, 230, 0.2);
-    background-color: var(--grid-thick);
+    background-color: var(--grid-thick); /* 填補縫隙 */
     gap: 0;
 }
 
@@ -81,28 +113,70 @@ input {
     background-color: var(--input-bg);
     color: var(--text-main);
     font-family: inherit;
-    transition: all 0.1s;
+    transition: background 0.1s;
     box-sizing: border-box;
+    
+    /* 預設細邊框 */
     border-right: 1px solid var(--grid-thin);
     border-bottom: 1px solid var(--grid-thin);
 }
 
-input:focus { background-color: #3a3a55; box-shadow: inset 0 0 0 2px var(--accent); }
+input:focus {
+    background-color: #3a3a55;
+    box-shadow: inset 0 0 0 2px var(--accent);
+    z-index: 10; /* 確保聚焦框在最上層 */
+}
+
+/* 邊框邏輯修正 (搭配 JS 類別) */
 input.thick-right { border-right: 3px solid var(--grid-thick) !important; }
 input.thick-bottom { border-bottom: 3px solid var(--grid-thick) !important; }
 input.no-right-border { border-right: none !important; }
 input.no-bottom-border { border-bottom: none !important; }
-.error-cell { background-color: rgba(243, 139, 168, 0.3) !important; color: var(--error) !important; }
-.solved-cell { color: var(--accent); font-weight: bold; text-shadow: 0 0 8px rgba(137, 180, 250, 0.6);}
 
-.sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-width: 300px;
+.tip-text {
+    margin-top: 15px;
+    color: var(--text-muted);
+    font-size: 0.9em;
 }
 
+/* =========================================
+   5. 資料來源與狀態顏色 (Source Colors)
+   ========================================= */
+/* 錯誤狀態 */
+.error-cell { 
+    background-color: rgba(243, 139, 168, 0.3) !important; 
+    color: var(--error) !important; 
+}
+
+/* A. 手打輸入 (亮白) */
+.source-manual {
+    color: var(--src-manual) !important;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+
+/* B. 文字匯入 (金黃) */
+.source-import {
+    color: var(--src-import) !important;
+    font-weight: bold;
+}
+
+/* C. OCR 辨識 (紫) */
+.source-ocr {
+    color: var(--src-ocr) !important;
+    font-weight: bold;
+}
+
+/* D. 電腦解題 (綠) */
+.solved-cell { 
+    color: var(--success) !important; 
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(166, 227, 161, 0.6);
+}
+
+/* =========================================
+   6. 面板與儀表板 (Panels)
+   ========================================= */
 .panel {
     background-color: var(--panel-bg);
     border: 1px solid #333;
@@ -111,39 +185,97 @@ input.no-bottom-border { border-bottom: none !important; }
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
-.panel-header { font-size: 1.1em; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; color: var(--accent); letter-spacing: 1px;}
-.stat-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95em; color: var(--text-muted); }
+.panel-header {
+    font-size: 1.1em;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    color: var(--accent);
+    letter-spacing: 1px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+    color: var(--text-muted);
+}
 .stat-value { font-weight: bold; color: var(--text-main); }
 
-#status-indicator { padding: 12px; border-radius: 6px; text-align: center; margin-top: 20px; font-weight: bold; letter-spacing: 2px; transition: all 0.3s;}
-.status-waiting { background: rgba(255,255,255,0.05); color: #888; border: 1px solid #333;}
-.status-error { background: rgba(243, 139, 168, 0.2); color: var(--error); border: 1px solid var(--error); box-shadow: 0 0 10px rgba(243, 139, 168, 0.3);}
-.status-success { background: rgba(166, 227, 161, 0.2); color: var(--success); border: 1px solid var(--success); box-shadow: 0 0 10px rgba(166, 227, 161, 0.3);}
-.status-valid { background: rgba(137, 180, 250, 0.2); color: var(--accent); border: 1px solid var(--accent);}
+/* 狀態指示燈 */
+#status-indicator {
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    transition: all 0.3s;
+}
+.status-waiting { background: rgba(255,255,255,0.05); color: #888; border: 1px solid #333; }
+.status-error { background: rgba(243, 139, 168, 0.2); color: var(--error); border: 1px solid var(--error); }
+.status-success { background: rgba(166, 227, 161, 0.2); color: var(--success); border: 1px solid var(--success); }
+.status-valid { background: rgba(137, 180, 250, 0.2); color: var(--accent); border: 1px solid var(--accent); }
 
-/* --- 新增：垂直按鈕佈局 --- */
+/* =========================================
+   7. 按鈕樣式 (Buttons)
+   ========================================= */
 .btn-group-vertical { display: flex; flex-direction: column; gap: 10px; }
 .btn-row { display: flex; gap: 10px; }
 
 button {
-    flex: 1; padding: 12px; cursor: pointer; font-weight: bold; border: none; border-radius: 6px; font-family: inherit; transition: all 0.2s; font-size: 0.9em; letter-spacing: 1px; color: #12121a;
+    flex: 1;
+    padding: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.9em;
+    letter-spacing: 1px;
+    color: #12121a; /* 按鈕文字深色 */
+    transition: all 0.2s;
 }
-.btn-solve { background: linear-gradient(135deg, var(--accent), #4b7bc2); box-shadow: 0 5px 15px rgba(137, 180, 250, 0.4); }
-.btn-clear { background: linear-gradient(135deg, var(--error), #c04d75); box-shadow: 0 5px 15px rgba(243, 139, 168, 0.4); }
-/* 輔助按鈕樣式 (Import, Verify) */
-.btn-action { background: #454560; color: var(--text-main); border: 1px solid #555; } 
-button:hover { transform: translateY(-2px); filter: brightness(1.15); }
 
-/* --- 新增：彈跳視窗樣式 --- */
+button:hover { transform: translateY(-2px); filter: brightness(1.15); }
+button:active { transform: translateY(0); }
+
+/* 按鈕個別配色 */
+.btn-solve { background: linear-gradient(135deg, var(--accent), #4b7bc2); box-shadow: 0 4px 10px rgba(137, 180, 250, 0.4); }
+.btn-clear { background: linear-gradient(135deg, var(--error), #c04d75); box-shadow: 0 4px 10px rgba(243, 139, 168, 0.4); }
+.btn-action { background: #454560; color: var(--text-main); border: 1px solid #555; }
+
+/* =========================================
+   8. 終端機與 Modal (Overlays)
+   ========================================= */
+/* 控制台視窗 */
+.console-window {
+    flex-grow: 1;
+    background-color: #151520;
+    font-size: 0.85em;
+    color: var(--success);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #333;
+}
+.log-entry { margin-bottom: 8px; border-bottom: 1px solid #252535; padding-bottom: 5px; }
+.log-time { color: #666; margin-right: 10px; font-size: 0.9em; }
+.log-warn { color: orange; }
+.log-err { color: var(--error); }
+
+/* 彈出視窗遮罩 */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: var(--modal-bg);
     z-index: 1000;
     display: flex; justify-content: center; align-items: center;
-    backdrop-filter: blur(5px); /* 背景模糊 */
+    backdrop-filter: blur(5px);
 }
 .hidden { display: none !important; }
 
+/* Import 視窗內容 */
 .modal-content {
     background-color: var(--panel-bg);
     border: 2px solid var(--accent);
@@ -154,8 +286,6 @@ button:hover { transform: translateY(-2px); filter: brightness(1.15); }
     display: flex; flex-direction: column; gap: 15px;
 }
 .modal-content h3 { margin: 0; color: var(--accent); }
-.modal-content p { margin: 0; color: var(--text-muted); font-size: 0.9em; }
-
 textarea {
     width: 100%; height: 150px;
     background-color: var(--input-bg); color: var(--text-main);
@@ -165,11 +295,23 @@ textarea {
 }
 .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
 
-.console-window {
-    flex-grow: 1; background-color: #151520; font-size: 0.85em;
-    color: var(--success); overflow-y: auto; display: flex; flex-direction: column; border: 1px solid #333;
+/* OCR Loading 動畫 */
+.loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
 }
-.log-entry { margin-bottom: 8px; border-bottom: 1px solid #252535; padding-bottom: 5px; }
-.log-time { color: #666; margin-right: 10px; font-size: 0.9em;}
-.log-warn { color: orange; }
-.log-err { color: var(--error); }
+.spinner {
+    width: 50px; height: 50px;
+    border: 5px solid var(--panel-bg);
+    border-top: 5px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
