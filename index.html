@@ -21,6 +21,44 @@
     </div>
 </div>
 
+<div id="ocr-help-modal" class="modal-overlay hidden">
+    <div class="modal-content help-content">
+        <span id="btn-close-help" class="close-x">&times;</span>
+        <h3>OCR 辨識教學</h3>
+        <p>本網站使用 <strong>影像分割 (Grid Slicing)</strong> 技術。</p>
+        <p>請參考下方的「示意圖」與「實拍範例」：</p>
+        
+        <div class="examples-container">
+            <div class="example-box bad">
+                <div class="example-label">❌ 錯誤範例</div>
+                
+                <div class="visual-group">
+                    <div class="visual-bad">
+                        <div class="visual-border"></div>
+                        <div class="visual-grid">9x9</div>
+                    </div>
+                    <img src="ex1.png" class="example-img" alt="Bad Example">
+                </div>
+
+                <p class="desc"><strong>外框太多 / 留白太大</strong><br>程式會切錯位置，導致數字讀取失敗。</p>
+            </div>
+
+            <div class="example-box good">
+                <div class="example-label">✅ 正確範例</div>
+                
+                <div class="visual-group">
+                    <div class="visual-good">
+                        <div class="visual-grid">9x9</div>
+                    </div>
+                    <img src="ex2.png" class="example-img" alt="Good Example">
+                </div>
+
+                <p class="desc"><strong>緊密裁切 (Crop Tight)</strong><br>請裁切到只剩 9x9 棋盤，接近正方形最準確。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="loading-overlay" class="modal-overlay hidden">
     <div class="loading-content">
         <div class="spinner"></div>
@@ -55,9 +93,14 @@
                 <button class="btn-solve" id="btn-solve">SOLVE</button>
                 <button class="btn-clear" id="btn-clear">CLEAR</button>
             </div>
+
             <div class="btn-row">
                 <button class="btn-action" id="btn-open-import">IMPORT TEXT</button>
-                <button class="btn-action" id="btn-image-upload">OCR IMAGE</button>
+                
+                <div style="flex: 1; display: flex; gap: 5px;">
+                    <button class="btn-action" id="btn-image-upload" style="flex: 1;">OCR IMAGE</button>
+                    <button class="btn-help" id="btn-open-help">?</button>
+                </div>
             </div>
             
             <div class="btn-row">

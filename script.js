@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingText = document.getElementById('loading-text');
 
+    // OCR 說明視窗相關 (新增)
+    const btnOpenHelp = document.getElementById('btn-open-help');
+    const helpModal = document.getElementById('ocr-help-modal');
+    const btnCloseHelp = document.getElementById('btn-close-help');
+
     // 一般按鈕
     const btnSolve = document.getElementById('btn-solve');
     const btnClear = document.getElementById('btn-clear');
@@ -38,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = document.createElement('input');
             input.type = 'text'; 
             input.maxLength = 1;
-            // 關鍵修改：強制手機跳出數字鍵盤
+            // 強制手機跳出數字鍵盤
             input.inputMode = 'numeric'; 
             input.dataset.index = i;
             
@@ -71,19 +76,40 @@ document.addEventListener('DOMContentLoaded', () => {
             boardElement.appendChild(input);
         }
         
-        // 綁定按鈕事件
+        // --- 按鈕事件綁定 ---
         btnSolve.addEventListener('click', runSolver);
         btnClear.addEventListener('click', clearBoard);
         btnCheckSum.addEventListener('click', checkSumAndVerify);
         
-        // 綁定匯入視窗事件
+        // 匯入視窗事件
         btnOpenImport.addEventListener('click', () => modal.classList.remove('hidden'));
         btnCloseModal.addEventListener('click', () => modal.classList.add('hidden'));
         btnConfirmImport.addEventListener('click', parseInputData);
 
-        // 綁定 OCR 上傳事件
+        // OCR 上傳事件
         btnImageUpload.addEventListener('click', () => hiddenFileInput.click());
         hiddenFileInput.addEventListener('change', handleImageUpload);
+
+        // --- 新增：OCR 說明視窗邏輯 (原本缺這段) ---
+        if (btnOpenHelp && helpModal && btnCloseHelp) {
+            // 1. 點擊問號 -> 打開
+            btnOpenHelp.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+            });
+            // 2. 點擊 X -> 關閉
+            btnCloseHelp.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+            // 3. 點擊灰色背景 (遮罩) -> 關閉 (通用邏輯)
+            window.addEventListener('click', (e) => {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                }
+                if (e.target === modal) { // 順便修復 Import 視窗點背景關閉的功能
+                    modal.classList.add('hidden');
+                }
+            });
+        }
 
         log("System Ready. Mobile Input Optimized.");
     }
@@ -136,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let row = 0; row < 9; row++) {
                 for (let col = 0; col < 9; col++) {
                     const index = row * 9 + col;
-                    // 進度顯示優化：每 9 格更新一次文字，避免閃爍太快
+                    // 進度顯示優化
                     if (col === 0) loadingText.innerText = `SCANNING ROW ${row + 1}/9...`;
 
                     const paddingX = cellW * 0.15;
