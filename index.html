@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Sudoku Solver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="import-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3>BATCH DATA IMPORT</h3>
+        <p>Paste your puzzle below (0 for empty):</p>
+        <textarea id="import-text" placeholder="Example:&#10;530070000&#10;600195000&#10;..."></textarea>
+        <div class="modal-actions">
+            <button id="btn-confirm-import" class="btn-solve">LOAD DATA</button>
+            <button id="btn-close-modal" class="btn-clear">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="game-area">
+        <h2 class="game-title">CYBER SUDOKU CORE</h2>
+        <div class="board" id="board"></div>
+        <div class="tip-text">Tip: Use Arrow Keys (↑↓←→) to navigate.</div>
+    </div>
+
+    <div class="sidebar">
+        
+        <div class="panel status-panel">
+            <div class="panel-header">SYSTEM STATUS</div>
+            <div class="stat-row">
+                <span>Filled Cells:</span>
+                <span class="stat-value" id="stat-filled">0 / 81</span>
+            </div>
+            <div class="stat-row">
+                <span>Missing:</span>
+                <span class="stat-value" id="stat-missing">81</span>
+            </div>
+            <div id="status-indicator" class="status-waiting">WAITING FOR INPUT...</div>
+        </div>
+
+        <div class="btn-group-vertical">
+            <div class="btn-row">
+                <button class="btn-solve" id="btn-solve">SOLVE</button>
+                <button class="btn-clear" id="btn-clear">CLEAR</button>
+            </div>
+            <div class="btn-row">
+                <button class="btn-action" id="btn-open-import">IMPORT TEXT</button>
+                <button class="btn-action" id="btn-check-sum">VERIFY SUMS</button>
+            </div>
+        </div>
+
+        <div class="panel console-window" id="console-log">
+            <div class="log-entry">> System initialized...</div>
+            <div class="log-entry">> Core Modules loaded.</div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
